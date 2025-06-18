@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React, { createContext, useContext, useState } from 'react'
 import { authDataContext } from './AuthContext';
-import { set } from 'mongoose';
 
 export const listingDataContext = createContext();
  
@@ -61,11 +60,11 @@ function ListingContext({ children }) {
 
   return (
     
-    <div>
+    
       <listingDataContext.Provider value={value}>
         {children}
       </listingDataContext.Provider>
-    </div>
+    
   )
 }
 
