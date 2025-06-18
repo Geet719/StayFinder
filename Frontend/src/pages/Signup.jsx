@@ -51,11 +51,8 @@ function Signup() {
     try {
       const response = await axios.post(
         `${serverUrl}/api/auth/signup`,
-        data,
-        { withCredentials: true },
-
-        { name, email, password },
-        { withCredentials: true }
+        { name, email, password }, 
+        { withCredentials: true } 
       );
 
       if (response.data) {
