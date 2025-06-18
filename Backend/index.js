@@ -31,7 +31,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "https://stayfinder-i3fg.onrender.com",
     credentials: true,
   })
 );

@@ -1,19 +1,19 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useState } from "react";
 
 // Create the context with a default value
 export const authDataContext = createContext({
-  serverUrl: 'http://localhost:8000', // or your actual server URL
+  serverUrl: "https://stayfinder-i3fg.onrender.com", // or your actual server URL http://localhost:8000
   user: null,
   setUser: () => {},
   isAuthenticated: false,
-  setIsAuthenticated: () => {}
+  setIsAuthenticated: () => {},
 });
 
 // Create the provider component
 export const AuthContext = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const serverUrl = 'http://localhost:8000'; // or your actual server URL
+  const serverUrl = "https://stayfinder-i3fg.onrender.com"; // or your actual server URL
 
   // Create the context value object
   const contextValue = {
@@ -21,7 +21,7 @@ export const AuthContext = ({ children }) => {
     user,
     setUser,
     isAuthenticated,
-    setIsAuthenticated
+    setIsAuthenticated,
   };
 
   return (
