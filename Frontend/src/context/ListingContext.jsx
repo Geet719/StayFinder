@@ -59,12 +59,9 @@ function ListingContext({ children }) {
    }
 
   return (
-    
-    
-      <listingDataContext.Provider value={value}>
-        {children}
-      </listingDataContext.Provider>
-    
+    <listingDataContext.Provider value={value}>
+      {children}
+    </listingDataContext.Provider>
   )
 }
 

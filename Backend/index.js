@@ -5,45 +5,66 @@ import connectDB from "./config/db.js";
 import router from "./routes/auth.route.js";
 import listingRouter from "./routes/listing.route.js";
 import userRouter from "./routes/user.route.js";
-import cookieParser from "cookie-parser";
 import paymentRoutes from "./routes/payment.route.js";
 import bookingRouter from "./routes/booking.route.js";
+import cookieParser from "cookie-parser";
 import path from "path";
+import { fileURLToPath } from "url";
 
 // Load environment variables
 dotenv.config();
-
-// Connect to MongoDB
 connectDB();
 
-const port = process.env.PORT || 3000;
 const app = express();
-app.use(cookieParser());
-const __dirname = path.resolve();
-// Serve static files from the React app
+const PORT = process.env.PORT || 8000;
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 
 // Middleware
-app.use(cors({
-    origin: process.env.CLIENT_URL || "http://localhost:5173",
-    credentials: true
-}));
 app.use(express.json());
 app.use(cookieParser());
-app.use(
-  cors({
-    origin: "https://stayfinder-i3fg.onrender.com",
-    credentials: true,
-  })
-);
 
-// Routes
+// ✅ CORS Configuration (allow production + local dev if needed)
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, etc.)
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'https://stayfinder-i3fg.onrender.com',
+      'http://localhost:5173',
+      'http://localhost:3000'
+    ];
+    
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+// API Routes
 app.use("/api/auth", router);
 app.use("/api/listings", listingRouter);
 app.use("/api/user", userRouter);
 app.use("/api", paymentRoutes);
 app.use("/api/bookings", bookingRouter);
 
-// Error handling middleware
+// ✅ Serve frontend (React/Vite build output)
+app.use(express.static(path.join(__dirname, "../Frontend/dist")));
+
+// 3. Wildcard route for SPA routing
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
+});
+
+// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({
@@ -52,13 +73,15 @@ app.use((err, req, res, next) => {
     error: err.message
   });
 });
-app.use(express.static(path.join(__dirname, "../Frontend/dist"))); 
-app.get("*", (_, res) => {
-  res.sendFile(path.resolve(__dirname, "Frontend", "dist", "index.html"));
+
+// Start server
+const server = app.listen(PORT, () => {
+  console.log(`✅ Server is running on port ${PORT}`);
 });
 
-const PORT = process.env.PORT || 8000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+// Graceful shutdown
+process.on('SIGTERM', () => {
+  server.close(() => {
+    console.log('Process terminated');
+  });
 });
